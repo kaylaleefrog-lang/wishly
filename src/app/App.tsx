@@ -875,7 +875,7 @@ export default function App() {
 
               {showNewList ? (
                 <div className="text-left p-4 rounded-2xl" style={{ background: "#fff", border: "2px solid #FFD6F0" }}>
-                  <div className="grid grid-cols-4 gap-1.5 mb-3 justify-items-center">
+                  <div className="grid grid-cols-6 gap-1.5 mb-3 justify-items-center">
                     {LIST_ICONS.map(({ value, Icon }) => (
                       <button key={value} onClick={() => setNewListIcon(value)} className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors"
                         style={{ background: newListIcon === value ? "#FF1493" : "#FFE8F5", color: newListIcon === value ? "#fff" : "#FF1493" }}>
