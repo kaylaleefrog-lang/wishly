@@ -1055,10 +1055,10 @@ export default function App() {
 
               {/* New list form */}
               {showNewList && (
-                <div className="mb-3 p-3 rounded-2xl" style={{ background: "#fff", border: "2px solid #FFD6F0" }}>
-                  <div className="grid grid-cols-4 gap-1.5 mb-2">
+                <div className="mb-3 p-3 rounded-2xl" style={{ background: "#fff", border: "2px solid #FFD6F0", maxWidth: 320 }}>
+                  <div className="grid grid-cols-4 gap-1.5 mb-2 overflow-y-auto" style={{ maxHeight: 160 }}>
                     {LIST_ICONS.map(({ value, Icon }) => (
-                      <button key={value} onClick={() => setNewListIcon(value)} className="aspect-square rounded-xl flex items-center justify-center transition-colors"
+                      <button key={value} onClick={() => setNewListIcon(value)} className="aspect-square rounded-xl flex items-center justify-center transition-colors flex-shrink-0"
                         style={{ background: newListIcon === value ? "#FF1493" : "#FFE8F5", color: newListIcon === value ? "#fff" : "#FF1493" }}>
                         <Icon size={13} />
                       </button>
