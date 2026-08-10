@@ -875,11 +875,11 @@ export default function App() {
 
               {showNewList ? (
                 <div className="text-left p-4 rounded-2xl" style={{ background: "#fff", border: "2px solid #FFD6F0" }}>
-                  <div className="grid grid-cols-4 gap-1.5 mb-3">
+                  <div className="grid grid-cols-4 gap-1.5 mb-3 justify-items-center">
                     {LIST_ICONS.map(({ value, Icon }) => (
-                      <button key={value} onClick={() => setNewListIcon(value)} className="aspect-square rounded-xl flex items-center justify-center transition-colors"
+                      <button key={value} onClick={() => setNewListIcon(value)} className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors"
                         style={{ background: newListIcon === value ? "#FF1493" : "#FFE8F5", color: newListIcon === value ? "#fff" : "#FF1493" }}>
-                        <Icon size={15} />
+                        <Icon size={13} />
                       </button>
                     ))}
                   </div>
@@ -932,11 +932,11 @@ export default function App() {
                         className="absolute top-full left-0 mt-2 z-40 p-2.5 rounded-2xl shadow-xl"
                         style={{ width: 210, background: "#fff", border: "2px solid #FFD6F0" }}
                       >
-                        <div className="grid grid-cols-6 gap-1 mb-2">
+                        <div className="grid grid-cols-6 gap-1 mb-2 justify-items-center">
                           {LIST_ICONS.map(({ value, Icon }) => (
-                            <button key={value} onClick={() => setEditingIcon(value)} className="aspect-square rounded-lg flex items-center justify-center transition-colors"
+                            <button key={value} onClick={() => setEditingIcon(value)} className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors"
                               style={{ background: editingIcon === value ? "#FF1493" : "#FFE8F5", color: editingIcon === value ? "#fff" : "#FF1493" }}>
-                              <Icon size={11} />
+                              <Icon size={10} />
                             </button>
                           ))}
                         </div>
@@ -1056,9 +1056,9 @@ export default function App() {
               {/* New list form */}
               {showNewList && (
                 <div className="mb-3 p-3 rounded-2xl" style={{ background: "#fff", border: "2px solid #FFD6F0", maxWidth: 320 }}>
-                  <div className="grid grid-cols-4 gap-1.5 mb-2 overflow-y-auto" style={{ maxHeight: 160 }}>
+                  <div className="grid grid-cols-4 gap-1.5 mb-2 overflow-y-auto justify-items-center" style={{ maxHeight: 160 }}>
                     {LIST_ICONS.map(({ value, Icon }) => (
-                      <button key={value} onClick={() => setNewListIcon(value)} className="aspect-square rounded-xl flex items-center justify-center transition-colors flex-shrink-0"
+                      <button key={value} onClick={() => setNewListIcon(value)} className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors"
                         style={{ background: newListIcon === value ? "#FF1493" : "#FFE8F5", color: newListIcon === value ? "#fff" : "#FF1493" }}>
                         <Icon size={13} />
                       </button>
