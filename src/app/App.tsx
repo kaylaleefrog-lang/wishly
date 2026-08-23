@@ -325,6 +325,7 @@ function AddItemModal({ onClose, onAdd }: { onClose: () => void; onAdd: (item: O
   const [selectedImg, setSelectedImg] = useState<string>("");
   const [notifyOnSale, setNotifyOnSale] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [manualEntry, setManualEntry] = useState(false);
 
   async function handleFetch() {
     if (!url.trim() || loading) return;
@@ -342,6 +343,15 @@ function AddItemModal({ onClose, onAdd }: { onClose: () => void; onAdd: (item: O
     }
   }
 
+  function handleManualEntry() {
+    let store = "";
+    try { store = new URL(url.trim()).hostname.replace(/^www\./, ""); } catch { /* leave blank if url isn't valid */ }
+    setScraped({ title: "", description: "", availableImages: [], price: null, originalPrice: null, onSale: false, salePercent: null, store, url: url.trim() });
+    setSelectedImg("");
+    setManualEntry(true);
+    setStep("pick");
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
@@ -351,7 +361,7 @@ function AddItemModal({ onClose, onAdd }: { onClose: () => void; onAdd: (item: O
           <div>
             <h2 className="text-xl font-semibold" style={{ fontFamily: "'Kiwi Soda', cursive", color: "#FF1493" }}>Add to wishlist</h2>
             <p className="text-xs mt-0.5" style={{ fontFamily: "'ZT Bros Oskon 90s', sans-serif", color: "#7A5E8A" }}>
-              {step === "url" ? "Paste a product link to get started" : "Now pick your fave photo!"}
+              {step === "url" ? "Paste a product link to get started" : manualEntry ? "Fill in what you can" : "Now pick your fave photo!"}
             </p>
           </div>
           <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "#FFD6F0" }}><X size={15} color="#FF1493" /></button>
@@ -371,8 +381,11 @@ function AddItemModal({ onClose, onAdd }: { onClose: () => void; onAdd: (item: O
                 We'll pull the real title, photo, and price from the page.
               </p>
               {error && (
-                <div className="flex items-center gap-2 rounded-2xl p-3 text-xs font-bold" style={{ background: "#FFEAF0", color: "#D6003F", fontFamily: "'ZT Bros Oskon 90s', sans-serif" }}>
-                  <AlertCircle size={14} />{error}
+                <div className="rounded-2xl p-3 text-xs font-bold" style={{ background: "#FFEAF0", color: "#D6003F", fontFamily: "'ZT Bros Oskon 90s', sans-serif" }}>
+                  <div className="flex items-center gap-2 mb-2"><AlertCircle size={14} />{error}</div>
+                  <button onClick={handleManualEntry} className="w-full rounded-xl py-2 text-xs font-bold transition-colors" style={{ background: "#fff", border: "2px solid #FFB6C9", color: "#D6003F" }}>
+                    Enter details manually instead
+                  </button>
                 </div>
               )}
               <button
@@ -385,39 +398,67 @@ function AddItemModal({ onClose, onAdd }: { onClose: () => void; onAdd: (item: O
             </div>
           ) : scraped ? (
             <div className="space-y-4">
-              <div className="flex gap-3 p-3 rounded-2xl" style={{ background: "#FFF5FD" }}>
-                {selectedImg ? (
-                  <img src={selectedImg} alt={scraped.title} className="w-16 h-16 object-cover rounded-xl flex-shrink-0" style={{ border: "2px solid #FFD6F0" }} />
-                ) : (
-                  <div className="w-16 h-16 rounded-xl flex-shrink-0 flex items-center justify-center" style={{ border: "2px solid #FFD6F0", background: "#fff" }}>
-                    <ImageOff size={20} color="#C0A0B0" />
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold line-clamp-2" style={{ fontFamily: "'Kiwi Soda', cursive", color: "#12002A" }}>{scraped.title}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    {scraped.price != null && <span className="text-sm font-bold" style={{ fontFamily: "'DM Mono', monospace", color: "#FF1493" }}>{fmt(scraped.price)}</span>}
-                    {scraped.price == null && <span className="text-xs" style={{ fontFamily: "'ZT Bros Oskon 90s', sans-serif", color: "#C0A0B0" }}>No price found</span>}
-                    {scraped.onSale && scraped.originalPrice && scraped.originalPrice !== scraped.price && <span className="text-xs line-through" style={{ fontFamily: "'DM Mono', monospace", color: "#C0A0B0" }}>{fmt(scraped.originalPrice)}</span>}
-                    {scraped.onSale && scraped.salePercent && <SaleBadge pct={scraped.salePercent} />}
-                  </div>
+              {manualEntry ? (
+                <div className="space-y-3">
+                  <input
+                    value={scraped.title} onChange={e => setScraped(s => s && { ...s, title: e.target.value })}
+                    placeholder="What is it?" autoFocus
+                    className="w-full rounded-2xl px-4 py-2.5 text-sm focus:outline-none"
+                    style={{ background: "#FDF5FF", border: "2px solid #FFD6F0", fontFamily: "'ZT Bros Oskon 90s', sans-serif", color: "#12002A" }}
+                  />
+                  <input
+                    value={scraped.price ?? ""} onChange={e => { const n = parseFloat(e.target.value); setScraped(s => s && { ...s, price: e.target.value.trim() === "" ? null : isNaN(n) ? s.price : n }); }}
+                    type="number" step="0.01" min="0" placeholder="Price (optional)"
+                    className="w-full rounded-2xl px-4 py-2.5 text-sm focus:outline-none"
+                    style={{ background: "#FDF5FF", border: "2px solid #FFD6F0", fontFamily: "'ZT Bros Oskon 90s', sans-serif", color: "#12002A" }}
+                  />
+                  <input
+                    value={selectedImg} onChange={e => setSelectedImg(e.target.value)}
+                    placeholder="Photo URL (optional)"
+                    className="w-full rounded-2xl px-4 py-2.5 text-sm focus:outline-none"
+                    style={{ background: "#FDF5FF", border: "2px solid #FFD6F0", fontFamily: "'ZT Bros Oskon 90s', sans-serif", color: "#12002A" }}
+                  />
+                  {selectedImg && (
+                    <img src={selectedImg} alt="" className="w-16 h-16 object-cover rounded-xl" style={{ border: "2px solid #FFD6F0" }} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  )}
                 </div>
-              </div>
-              {scraped.availableImages.length > 0 ? (
-              <div>
-                <p className="text-xs font-bold mb-2" style={{ fontFamily: "'ZT Bros Oskon 90s', sans-serif", color: "#7A5E8A" }}>Choose a photo</p>
-                <div className="grid grid-cols-4 gap-2">
-                  {scraped.availableImages.map((img, i) => (
-                    <button key={i} onClick={() => setSelectedImg(img)} className="relative aspect-square rounded-xl overflow-hidden transition-all"
-                      style={{ border: img === selectedImg ? "2.5px solid #FF1493" : "2.5px solid #FFD6F0" }}>
-                      <img src={img} alt={`Option ${i + 1}`} className="w-full h-full object-cover" />
-                      {img === selectedImg && <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(255,20,147,0.15)" }}><div className="rounded-full p-0.5" style={{ background: "#FF1493" }}><Check size={10} color="#fff" /></div></div>}
-                    </button>
-                  ))}
-                </div>
-              </div>
               ) : (
-                <p className="text-xs text-center py-2" style={{ fontFamily: "'ZT Bros Oskon 90s', sans-serif", color: "#C0A0B0" }}>No photos found on that page.</p>
+                <>
+                  <div className="flex gap-3 p-3 rounded-2xl" style={{ background: "#FFF5FD" }}>
+                    {selectedImg ? (
+                      <img src={selectedImg} alt={scraped.title} className="w-16 h-16 object-cover rounded-xl flex-shrink-0" style={{ border: "2px solid #FFD6F0" }} />
+                    ) : (
+                      <div className="w-16 h-16 rounded-xl flex-shrink-0 flex items-center justify-center" style={{ border: "2px solid #FFD6F0", background: "#fff" }}>
+                        <ImageOff size={20} color="#C0A0B0" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold line-clamp-2" style={{ fontFamily: "'Kiwi Soda', cursive", color: "#12002A" }}>{scraped.title}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        {scraped.price != null && <span className="text-sm font-bold" style={{ fontFamily: "'DM Mono', monospace", color: "#FF1493" }}>{fmt(scraped.price)}</span>}
+                        {scraped.price == null && <span className="text-xs" style={{ fontFamily: "'ZT Bros Oskon 90s', sans-serif", color: "#C0A0B0" }}>No price found</span>}
+                        {scraped.onSale && scraped.originalPrice && scraped.originalPrice !== scraped.price && <span className="text-xs line-through" style={{ fontFamily: "'DM Mono', monospace", color: "#C0A0B0" }}>{fmt(scraped.originalPrice)}</span>}
+                        {scraped.onSale && scraped.salePercent && <SaleBadge pct={scraped.salePercent} />}
+                      </div>
+                    </div>
+                  </div>
+                  {scraped.availableImages.length > 0 ? (
+                  <div>
+                    <p className="text-xs font-bold mb-2" style={{ fontFamily: "'ZT Bros Oskon 90s', sans-serif", color: "#7A5E8A" }}>Choose a photo</p>
+                    <div className="grid grid-cols-4 gap-2">
+                      {scraped.availableImages.map((img, i) => (
+                        <button key={i} onClick={() => setSelectedImg(img)} className="relative aspect-square rounded-xl overflow-hidden transition-all"
+                          style={{ border: img === selectedImg ? "2.5px solid #FF1493" : "2.5px solid #FFD6F0" }}>
+                          <img src={img} alt={`Option ${i + 1}`} className="w-full h-full object-cover" />
+                          {img === selectedImg && <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(255,20,147,0.15)" }}><div className="rounded-full p-0.5" style={{ background: "#FF1493" }}><Check size={10} color="#fff" /></div></div>}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  ) : (
+                    <p className="text-xs text-center py-2" style={{ fontFamily: "'ZT Bros Oskon 90s', sans-serif", color: "#C0A0B0" }}>No photos found on that page.</p>
+                  )}
+                </>
               )}
               <label className="flex items-center gap-3 cursor-pointer">
                 <div onClick={() => setNotifyOnSale(!notifyOnSale)} className="relative w-10 h-5 rounded-full transition-colors duration-200 cursor-pointer flex-shrink-0" style={{ background: notifyOnSale ? "#FF1493" : "#E8C8F0" }}>
@@ -426,8 +467,13 @@ function AddItemModal({ onClose, onAdd }: { onClose: () => void; onAdd: (item: O
                 <span className="text-sm font-bold" style={{ fontFamily: "'ZT Bros Oskon 90s', sans-serif", color: "#12002A" }}>Notify me when price drops</span>
               </label>
               <div className="flex gap-2">
-                <button onClick={() => setStep("url")} className="flex-1 rounded-2xl py-2.5 text-sm font-bold transition-colors" style={{ border: "2px solid #FFD6F0", fontFamily: "'ZT Bros Oskon 90s', sans-serif", color: "#FF1493", background: "#fff" }}>Back</button>
-                <button onClick={() => { if (!scraped) return; onAdd({ ...scraped, selectedImage: selectedImg, notifyOnSale }); onClose(); }} className="flex-[2] rounded-2xl py-2.5 text-sm font-bold flex items-center justify-center gap-2" style={{ background: "linear-gradient(135deg, #FF1493, #FF69B4)", color: "#fff", fontFamily: "'ZT Bros Oskon 90s', sans-serif" }}>
+                <button onClick={() => { setStep("url"); setManualEntry(false); }} className="flex-1 rounded-2xl py-2.5 text-sm font-bold transition-colors" style={{ border: "2px solid #FFD6F0", fontFamily: "'ZT Bros Oskon 90s', sans-serif", color: "#FF1493", background: "#fff" }}>Back</button>
+                <button
+                  onClick={() => { if (!scraped) return; onAdd({ ...scraped, selectedImage: selectedImg, notifyOnSale }); onClose(); }}
+                  disabled={manualEntry && !scraped.title.trim()}
+                  className="flex-[2] rounded-2xl py-2.5 text-sm font-bold flex items-center justify-center gap-2 transition-opacity disabled:opacity-40"
+                  style={{ background: "linear-gradient(135deg, #FF1493, #FF69B4)", color: "#fff", fontFamily: "'ZT Bros Oskon 90s', sans-serif" }}
+                >
                   <Heart size={14} fill="#fff" />Add to wishlist
                 </button>
               </div>
