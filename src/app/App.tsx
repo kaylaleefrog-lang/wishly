@@ -1259,11 +1259,11 @@ export default function App() {
                   )}
                 </div>
 
-                {/* Bottom: add item */}
+                {/* Bottom: visit store */}
                 <div className="flex-shrink-0 px-5 pb-5">
-                  <button onClick={() => setShowAddItem(true)} className="w-full rounded-2xl py-3 text-sm font-bold flex items-center justify-center gap-2 transition-all" style={{ background: "linear-gradient(135deg, #FF1493, #FF69B4)", color: "#fff", fontFamily: "'ZT Bros Oskon 90s', sans-serif" }}>
-                    <Plus size={16} />Add another item
-                  </button>
+                  <a href={selectedItem.url} target="_blank" rel="noopener noreferrer" className="w-full rounded-2xl py-3 text-sm font-bold flex items-center justify-center gap-2 transition-all" style={{ background: "linear-gradient(135deg, #42FAE1, #00D4B8)", color: "#003D35", fontFamily: "'ZT Bros Oskon 90s', sans-serif" }}>
+                    Visit {selectedItem.store} <ExternalLink size={14} />
+                  </a>
                 </div>
               </>
             </div>
