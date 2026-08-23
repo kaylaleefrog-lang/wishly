@@ -1237,16 +1237,11 @@ export default function App() {
                   <h2 className="text-xl font-semibold mb-1" style={{ fontFamily: "'Kiwi Soda', cursive", color: "#12002A" }}>{selectedItem.title}</h2>
                   <p className="text-sm mb-3 leading-relaxed" style={{ fontFamily: "'ZT Bros Oskon 90s', sans-serif", color: "#7A5E8A" }}>{selectedItem.description}</p>
 
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-baseline gap-2">
-                      {selectedItem.price !== null && <span className="text-2xl font-bold" style={{ fontFamily: "'DM Mono', monospace", color: "#FF1493" }}>{fmt(selectedItem.price)}</span>}
-                      {selectedItem.onSale && selectedItem.originalPrice && selectedItem.originalPrice !== selectedItem.price && (
-                        <span className="text-sm line-through" style={{ fontFamily: "'DM Mono', monospace", color: "#C0A0B0" }}>{fmt(selectedItem.originalPrice)}</span>
-                      )}
-                    </div>
-                    <a href={selectedItem.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-bold transition-all" style={{ background: "linear-gradient(135deg, #42FAE1, #00D4B8)", color: "#003D35", fontFamily: "'ZT Bros Oskon 90s', sans-serif" }}>
-                      Visit {selectedItem.store} <ExternalLink size={10} />
-                    </a>
+                  <div className="flex items-baseline gap-2 mb-4">
+                    {selectedItem.price !== null && <span className="text-2xl font-bold" style={{ fontFamily: "'DM Mono', monospace", color: "#FF1493" }}>{fmt(selectedItem.price)}</span>}
+                    {selectedItem.onSale && selectedItem.originalPrice && selectedItem.originalPrice !== selectedItem.price && (
+                      <span className="text-sm line-through" style={{ fontFamily: "'DM Mono', monospace", color: "#C0A0B0" }}>{fmt(selectedItem.originalPrice)}</span>
+                    )}
                   </div>
 
                   {selectedItem.onSale && (
@@ -1261,7 +1256,7 @@ export default function App() {
 
                 {/* Bottom: visit store */}
                 <div className="flex-shrink-0 px-5 pb-5">
-                  <a href={selectedItem.url} target="_blank" rel="noopener noreferrer" className="w-full rounded-2xl py-3 text-sm font-bold flex items-center justify-center gap-2 transition-all" style={{ background: "linear-gradient(135deg, #42FAE1, #00D4B8)", color: "#003D35", fontFamily: "'ZT Bros Oskon 90s', sans-serif" }}>
+                  <a href={selectedItem.url} target="_blank" rel="noopener noreferrer" className="w-full rounded-2xl py-3 text-sm font-bold flex items-center justify-center gap-2 transition-all" style={{ background: "linear-gradient(135deg, #FF1493, #FF69B4)", color: "#fff", fontFamily: "'ZT Bros Oskon 90s', sans-serif" }}>
                     Visit {selectedItem.store} <ExternalLink size={14} />
                   </a>
                 </div>
