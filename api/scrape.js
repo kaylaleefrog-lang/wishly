@@ -73,12 +73,27 @@ export default async function handler(req, res) {
   let html;
   try {
     const response = await fetch(parsed.toString(), {
-      headers: { "User-Agent": USER_AGENT, Accept: "text/html,application/xhtml+xml" },
+      headers: {
+        "User-Agent": USER_AGENT,
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Upgrade-Insecure-Requests": "1",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Sec-Fetch-User": "?1",
+      },
       signal: controller.signal,
       redirect: "follow",
     });
     if (!response.ok) {
-      res.status(502).json({ error: `That site responded with ${response.status}` });
+      // Some retailers run bot-detection (Akamai, PerimeterX, Cloudflare, etc.)
+      // that blocks requests by server IP reputation regardless of headers —
+      // a 403 here often means that, not a bug in this app.
+      const blockedHint = response.status === 403
+        ? " — this site may be blocking automated requests, which isn't always fixable"
+        : "";
+      res.status(502).json({ error: `That site responded with ${response.status}${blockedHint}` });
       return;
     }
     html = await readBodyCapped(response);
